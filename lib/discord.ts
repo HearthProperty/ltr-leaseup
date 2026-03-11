@@ -11,28 +11,42 @@ export async function sendLeadNotification(
   resultUrl: string
 ): Promise<boolean> {
   try {
-    const addressStr = property.address
-      ? `${property.address}${property.city ? `, ${property.city}` : ''}${property.state ? `, ${property.state}` : ''}`
-      : 'See Zillow link';
+    const addressStr = property.address || 'See Zillow link';
+    const cityStr = property.city && property.state
+      ? `${property.city}, ${property.state}`
+      : 'See listing';
+
+    // Build fields — Discord rejects empty string values
+    const fields: Array<{ name: string; value: string; inline: boolean }> = [
+      { name: 'Lead Magnet', value: 'Lease-Up Audit', inline: true },
+      { name: 'Owner', value: input.ownerName || 'N/A', inline: true },
+      { name: 'Urgency', value: `${score.urgencyScore}/10 — ${score.urgencyLabel}`, inline: true },
+      { name: 'Phone', value: input.phone || 'N/A', inline: true },
+      { name: 'Email', value: input.email || 'N/A', inline: true },
+      { name: 'Property', value: addressStr, inline: false },
+      { name: 'City', value: cityStr, inline: true },
+      { name: 'Asking Rent', value: `$${input.askingRent.toLocaleString()}/mo`, inline: true },
+      { name: 'Days on Market', value: `${input.daysOnMarket}`, inline: true },
+    ];
+
+    if (property.bedrooms) {
+      fields.push({
+        name: 'Details',
+        value: `${property.bedrooms}bd/${property.bathrooms || '?'}ba${property.sqft ? ` · ${property.sqft.toLocaleString()} sqft` : ''}`,
+        inline: true,
+      });
+    }
+
+    fields.push(
+      { name: 'Zillow', value: input.zillowUrl, inline: false },
+      { name: 'Summary', value: (score.recommendation || 'See results').slice(0, 1024), inline: false },
+      { name: 'Results', value: resultUrl, inline: false },
+    );
 
     const embed = {
       title: '🏠 New Lease-Up Lead',
-      color: 16750848, // gold/amber
-      fields: [
-        { name: 'Lead Magnet', value: 'Lease-Up Audit', inline: true },
-        { name: 'Owner', value: input.ownerName, inline: true },
-        { name: 'Urgency', value: `${score.urgencyScore}/10 — ${score.urgencyLabel}`, inline: true },
-        { name: 'Phone', value: input.phone, inline: true },
-        { name: 'Email', value: input.email, inline: true },
-        { name: 'Property', value: addressStr, inline: false },
-        { name: 'City', value: property.city && property.state ? `${property.city}, ${property.state}` : 'See listing', inline: true },
-        { name: 'Asking Rent', value: `$${input.askingRent.toLocaleString()}/mo`, inline: true },
-        { name: 'Days on Market', value: `${input.daysOnMarket}`, inline: true },
-        ...(property.bedrooms ? [{ name: 'Details', value: `${property.bedrooms}bd/${property.bathrooms || '?'}ba${property.sqft ? ` · ${property.sqft.toLocaleString()} sqft` : ''}`, inline: true }] : []),
-        { name: 'Zillow Listing', value: input.zillowUrl, inline: false },
-        { name: 'Summary', value: score.recommendation, inline: false },
-        { name: 'Result URL', value: resultUrl, inline: false },
-      ],
+      color: 16750848,
+      fields,
       timestamp: new Date().toISOString(),
     };
 
