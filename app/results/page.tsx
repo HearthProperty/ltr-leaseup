@@ -55,8 +55,7 @@ function ResultsContent() {
       <nav className="nav">
         <div className="container nav__inner">
           <a href="/" className="nav__logo">
-            <span className="nav__logo-mark">H</span>
-            <span className="nav__logo-text">Hearth</span>
+            <img src="/logo.svg" alt="Hearth Property" className="nav__logo-img" />
           </a>
           <a href="/#audit-form" className="btn btn--secondary">
             New Audit

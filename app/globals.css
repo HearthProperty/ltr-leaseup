@@ -449,17 +449,9 @@ p {
   color: var(--color-text-primary);
 }
 
-.nav__logo-mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
-  color: var(--color-navy);
-  border-radius: var(--radius-sm);
-  font-weight: 800;
-  font-size: 1.1rem;
+.nav__logo-img {
+  height: 32px;
+  width: auto;
 }
 
 .nav__cta {
