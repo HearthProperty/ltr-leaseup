@@ -236,7 +236,7 @@ export default function LeaseUpForm() {
             Analyzing Your Listing…
           </>
         ) : (
-          'Get Your Free Lease-Up Audit →'
+          'Unlock Your Free Lease-Up Audit →'
         )}
       </button>
     </form>

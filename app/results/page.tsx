@@ -22,7 +22,7 @@ function ResultsContent() {
         <h1>No Results Found</h1>
         <p>It looks like you haven&apos;t submitted an audit yet.</p>
         <a href="/#audit-form" className="btn btn--primary btn--large">
-          Take the Audit →
+          Unlock Your Audit →
         </a>
       </div>
     );

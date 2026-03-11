@@ -11,7 +11,7 @@ export default function HomePage() {
             <span className="nav__logo-text">Hearth</span>
           </a>
           <a href="#audit-form" className="btn btn--primary nav__cta">
-            Get Your Free Audit
+            Unlock Your Free Audit
           </a>
         </div>
       </nav>
@@ -31,7 +31,7 @@ export default function HomePage() {
               and a professional recommendation — in 60 seconds. No login required.
             </p>
             <a href="#audit-form" className="btn btn--primary btn--large hero__cta">
-              Start Your Audit →
+              Unlock Your Audit →
             </a>
           </div>
 
