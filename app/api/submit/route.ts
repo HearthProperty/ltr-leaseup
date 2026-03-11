@@ -41,22 +41,15 @@ export async function POST(request: Request) {
     );
     const resultUrl = `${siteUrl}/results?data=${resultData}`;
 
-    // 5. Push to Close CRM (critical path)
+    // 5. Push to Close CRM (non-blocking)
     let closeLeadId: string | undefined;
     try {
       closeLeadId = await createLead(input, property, score);
     } catch (error) {
-      console.error('[Submit] Close CRM failed — blocking submission:', error);
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Failed to process your submission. Please try again.',
-        },
-        { status: 500 }
-      );
+      console.error('[Submit] Close CRM failed (non-blocking):', error);
     }
 
-    // 6. Notify Discord (fire-and-forget)
+    // 6. Notify Discord (non-blocking)
     try {
       await sendLeadNotification(input, property, score, resultUrl);
     } catch (error) {
