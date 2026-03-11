@@ -50,7 +50,7 @@ async function fetchZillowPage(url: string): Promise<string | null> {
         'Accept-Language': 'en-US,en;q=0.9',
         'Cache-Control': 'no-cache',
       },
-      signal: AbortSignal.timeout(8000), // 8s timeout
+      signal: AbortSignal.timeout(3000), // 3s timeout — keep it fast
     });
 
     if (!response.ok) {

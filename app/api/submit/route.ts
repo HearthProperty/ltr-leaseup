@@ -1,5 +1,5 @@
 // API route: POST /api/submit
-// Orchestrates: validate → scrape Zillow → score → Close CRM → Discord → respond
+// Orchestrates: validate → scrape Zillow → score → Close + Discord (parallel) → respond
 
 import { NextResponse } from 'next/server';
 import { formInputSchema } from '@/lib/types';
@@ -41,22 +41,21 @@ export async function POST(request: Request) {
     );
     const resultUrl = `${siteUrl}/results?data=${resultData}`;
 
-    // 5. Push to Close CRM (non-blocking)
-    let closeLeadId: string | undefined;
-    try {
-      closeLeadId = await createLead(input, property, score);
-    } catch (error) {
-      console.error('[Submit] Close CRM failed (non-blocking):', error);
-    }
+    // 5. Fire Close + Discord in parallel (both non-blocking)
+    const [closeResult] = await Promise.allSettled([
+      createLead(input, property, score).catch(err => {
+        console.error('[Submit] Close CRM failed (non-blocking):', err);
+        return undefined;
+      }),
+      sendLeadNotification(input, property, score, resultUrl).catch(err => {
+        console.error('[Submit] Discord failed (non-blocking):', err);
+        return false;
+      }),
+    ]);
 
-    // 6. Notify Discord (non-blocking)
-    try {
-      await sendLeadNotification(input, property, score, resultUrl);
-    } catch (error) {
-      console.error('[Submit] Discord notification failed (non-blocking):', error);
-    }
+    const closeLeadId = closeResult.status === 'fulfilled' ? closeResult.value : undefined;
 
-    // 7. Return success
+    // 6. Return success
     return NextResponse.json({
       success: true,
       score,

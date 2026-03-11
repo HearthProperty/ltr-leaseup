@@ -62,7 +62,16 @@ export default function LeaseUpForm() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      // Handle non-JSON responses (Vercel timeout, HTML error pages)
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        console.error('API returned non-JSON response, status:', res.status);
+        setServerError(`Server error (${res.status}). Please try again in a moment.`);
+        setIsSubmitting(false);
+        return;
+      }
 
       if (!res.ok) {
         if (data.details) {
