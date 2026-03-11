@@ -782,9 +782,9 @@ p {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
 }
 
 .score-gauge__number {
@@ -797,10 +797,9 @@ p {
 .score-gauge__max {
   font-family: var(--font-heading);
   font-weight: 500;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--color-text-muted);
-  align-self: flex-end;
-  margin-bottom: 6px;
+  margin-top: 4px;
 }
 
 .score-gauge__label {
