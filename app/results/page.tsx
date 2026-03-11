@@ -1,7 +1,6 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import ScoreGauge from '../components/ScoreGauge';
 import ResultCard from '../components/ResultCard';
 import type { FormInput, ZillowData, ScoreResult } from '@/lib/types';
@@ -12,32 +11,38 @@ interface ResultData {
   score: ScoreResult;
 }
 
-function ResultsContent() {
-  const searchParams = useSearchParams();
-  const dataParam = searchParams.get('data');
+export default function ResultsPage() {
+  const [data, setData] = useState<ResultData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!dataParam) {
+  useEffect(() => {
+    const stored = sessionStorage.getItem('leaseUpResults');
+    if (stored) {
+      try {
+        setData(JSON.parse(stored));
+      } catch {
+        setData(null);
+      }
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="results-loading container container--narrow section">
+        <div className="spinner" style={{ width: 48, height: 48 }} />
+        <p>Loading your results…</p>
+      </div>
+    );
+  }
+
+  if (!data) {
     return (
       <div className="results-empty container container--narrow section">
         <h1>No Results Found</h1>
         <p>It looks like you haven&apos;t submitted an audit yet.</p>
         <a href="/#audit-form" className="btn btn--primary btn--large">
           Unlock Your Audit →
-        </a>
-      </div>
-    );
-  }
-
-  let data: ResultData;
-  try {
-    data = JSON.parse(atob(decodeURIComponent(dataParam)));
-  } catch {
-    return (
-      <div className="results-empty container container--narrow section">
-        <h1>Invalid Results</h1>
-        <p>We couldn&apos;t load your audit results. Please try again.</p>
-        <a href="/#audit-form" className="btn btn--primary btn--large">
-          Retake the Audit →
         </a>
       </div>
     );
@@ -78,12 +83,6 @@ function ResultsContent() {
               {property.sqft && `${property.sqft.toLocaleString()} sqft · `}
               ${input.askingRent.toLocaleString()}/mo
             </p>
-            {property.imageUrl && (
-              <div className="results-header__image animate-fade-in-up animate-delay-1">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={property.imageUrl} alt={displayAddress} />
-              </div>
-            )}
             <a
               href={input.zillowUrl}
               className="results-header__zillow-link"
@@ -186,18 +185,5 @@ function ResultsContent() {
         </div>
       </footer>
     </main>
-  );
-}
-
-export default function ResultsPage() {
-  return (
-    <Suspense fallback={
-      <div className="results-loading container container--narrow section">
-        <div className="spinner" style={{ width: 48, height: 48 }} />
-        <p>Loading your results…</p>
-      </div>
-    }>
-      <ResultsContent />
-    </Suspense>
   );
 }

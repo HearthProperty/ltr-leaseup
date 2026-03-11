@@ -82,14 +82,15 @@ export default function LeaseUpForm() {
         return;
       }
 
-      // Redirect to results page
-      const resultData = btoa(JSON.stringify({
+      // Store results in sessionStorage and redirect
+      sessionStorage.setItem('leaseUpResults', JSON.stringify({
         input: payload,
         property: data.property,
         score: data.score,
       }));
-      router.push(`/results?data=${encodeURIComponent(resultData)}`);
-    } catch {
+      router.push('/results');
+    } catch (err) {
+      console.error('Form submission error:', err);
       setServerError('Network error. Please check your connection and try again.');
       setIsSubmitting(false);
     }
