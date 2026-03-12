@@ -6,6 +6,26 @@ import type { FormInput } from '@/lib/types';
 
 const MGMT_OPTIONS = ['Self-managed', 'Have a PM'] as const;
 
+// Format phone as (XXX) XXX-XXXX
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+// Format rent as $X,XXX
+function formatRent(value: string): string {
+  const digits = value.replace(/\D/g, '');
+  if (!digits) return '';
+  return Number(digits).toLocaleString();
+}
+
+// Strip formatting to get raw number
+function parseRent(formatted: string): string {
+  return formatted.replace(/\D/g, '');
+}
+
 interface FieldErrors {
   [key: string]: string[] | undefined;
 }
@@ -47,9 +67,9 @@ export default function LeaseUpForm() {
     const payload: FormInput = {
       ownerName: form.ownerName.trim(),
       email: form.email.trim(),
-      phone: form.phone.trim(),
+      phone: form.phone.replace(/\D/g, ''),
       zillowUrl: form.zillowUrl.trim(),
-      askingRent: Number(form.askingRent) || 0,
+      askingRent: Number(parseRent(form.askingRent)) || 0,
       daysOnMarket: Number(form.daysOnMarket) || 0,
       currentlyVacant: form.currentlyVacant,
       managementSituation: form.managementSituation,
@@ -138,7 +158,7 @@ export default function LeaseUpForm() {
               type="tel"
               placeholder="(555) 123-4567"
               value={form.phone}
-              onChange={e => updateField('phone', e.target.value)}
+              onChange={e => updateField('phone', formatPhone(e.target.value))}
               required
             />
             <span className="form-error">{fieldErrors.phone?.[0] ?? ''}</span>
@@ -178,11 +198,11 @@ export default function LeaseUpForm() {
             <input
               id="askingRent"
               className={`form-input ${fieldErrors.askingRent ? 'form-input--error' : ''}`}
-              type="number"
-              min="0"
+              type="text"
+              inputMode="numeric"
               placeholder="2,000"
               value={form.askingRent}
-              onChange={e => updateField('askingRent', e.target.value)}
+              onChange={e => updateField('askingRent', formatRent(e.target.value))}
               required
             />
             <span className="form-error">{fieldErrors.askingRent?.[0] ?? ''}</span>

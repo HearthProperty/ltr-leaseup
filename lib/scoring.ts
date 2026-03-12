@@ -1,5 +1,5 @@
 // Scoring engine — pure, deterministic, no external calls.
-// Calculates urgency score, vacancy cost, findings, and recommendation.
+// Generates concrete, actionable findings with financial context.
 
 import type { FormInput, ZillowData, ScoreResult, UrgencyLabel } from './types';
 import {
@@ -11,13 +11,11 @@ import {
 } from './scoring-rules';
 
 export function calculateScore(input: FormInput, property: ZillowData): ScoreResult {
-  // 1. Base score from days on market (heaviest factor)
+  // 1. Base score from days on market
   let baseScore = 1;
-  let domInsight = '';
   for (const t of DOM_THRESHOLDS) {
     if (input.daysOnMarket <= t.max) {
       baseScore = t.score;
-      domInsight = t.label;
       break;
     }
   }
@@ -42,94 +40,111 @@ export function calculateScore(input: FormInput, property: ZillowData): ScoreRes
     }
   }
 
-  // 6. Estimated vacancy cost
+  // 6. Vacancy cost math
+  const dailyCost = Math.round(input.askingRent / 30);
+  const cost7 = dailyCost * 7;
+  const cost14 = dailyCost * 14;
+  const cost30 = dailyCost * 30;
   const vacancyFactor = input.currentlyVacant ? VACANCY_COST_FACTOR : 0.5;
   const estimatedMonthlyLoss = Math.round(input.askingRent * vacancyFactor);
   const estimatedAnnualLoss = estimatedMonthlyLoss * 12;
 
-  // 7. Generate findings (3–5 bullets)
-  const findings: string[] = [];
-  const propertyLabel = property.address || 'Your property';
-
-  // Vacancy finding
-  if (input.currentlyVacant) {
-    findings.push(
-      `${propertyLabel} is currently vacant — every day without a tenant costs you approximately $${Math.round(input.askingRent / 30)}/day in lost revenue.`
-    );
-  } else {
-    findings.push(
-      `${propertyLabel} has been listed for ${input.daysOnMarket} days. ${domInsight}.`
-    );
-  }
-
-  // Days on market finding
-  if (input.daysOnMarket > 21) {
-    findings.push(
-      `At ${input.daysOnMarket} days on market, your property is outside the optimal leasing window. The longer it sits, the harder it becomes to attract quality tenants.`
-    );
-  } else if (input.daysOnMarket > 7) {
-    findings.push(
-      `${input.daysOnMarket} days on market is within the normal range, but there are steps to accelerate leasing.`
-    );
-  }
-
-  // Cost finding
-  findings.push(
-    `Estimated vacancy cost: $${estimatedMonthlyLoss.toLocaleString()}/month ($${estimatedAnnualLoss.toLocaleString()}/year) based on your asking rent of $${input.askingRent.toLocaleString()}/mo.`
-  );
-
-  // Property-specific finding from Zillow data
-  if (property.raw && property.bedrooms && property.sqft) {
-    findings.push(
-      `Based on your Zillow listing, this ${property.bedrooms}bd/${property.bathrooms || '?'}ba ${property.propertyType !== 'Unknown' ? property.propertyType : 'property'} (${property.sqft.toLocaleString()} sq ft) should be competitive in ${property.city || 'your market'} — if it's sitting, the issue is likely pricing, photos, or marketing reach.`
-    );
-  }
-
-  // Management finding
-  if (input.managementSituation === 'Self-managed') {
-    findings.push(
-      'Self-managing during a vacancy often means slower turnaround — professional leasing support can cut your time-to-tenant significantly.'
-    );
-  } else {
-    findings.push(
-      'Having a PM is a good start, but if leasing is stalling, it may be time to evaluate their marketing and pricing strategy.'
-    );
-  }
-
-  // Rent positioning finding
-  if (input.daysOnMarket > 30 && input.askingRent > 0) {
-    findings.push(
-      'Properties that sit beyond 30 days often benefit from a pricing adjustment or enhanced listing presentation — even small changes can dramatically increase showing activity.'
-    );
-  }
-
-  // Cap at 5 findings
-  const cappedFindings = findings.slice(0, 5);
+  // 7. Generate findings
+  const findings = generateFindings(input, property, { dailyCost, cost7, cost14, cost30 });
 
   // 8. Recommendation
-  const recommendation = generateRecommendation(urgencyLabel, property);
+  const recommendation = generateRecommendation(urgencyLabel, property, input);
 
   return {
     urgencyScore,
     urgencyLabel,
     estimatedMonthlyLoss,
     estimatedAnnualLoss,
-    findings: cappedFindings,
+    findings,
     recommendation,
   };
 }
 
-function generateRecommendation(urgency: UrgencyLabel, property: ZillowData): string {
-  const propRef = property.address ? `your property at ${property.address}` : 'your property';
+interface CostCalc {
+  dailyCost: number;
+  cost7: number;
+  cost14: number;
+  cost30: number;
+}
+
+function generateFindings(
+  input: FormInput,
+  property: ZillowData,
+  costs: CostCalc
+): string[] {
+  const findings: string[] = [];
+  const addr = property.address || 'Your property';
+  const { dailyCost, cost7, cost14, cost30 } = costs;
+
+  // --- FINDING 1: Vacancy Cost Calculator ---
+  if (input.currentlyVacant) {
+    findings.push(
+      `${addr} is vacant right now. At your asking rent of $${input.askingRent.toLocaleString()}/mo, every 7 vacant days costs you $${cost7.toLocaleString()} in lost gross rent. At 14 days, that's $${cost14.toLocaleString()}. At 30 days, you've lost $${cost30.toLocaleString()} — and that doesn't include utilities, maintenance, or insurance you're still paying on an empty unit. The fastest way to stop the bleed is a structured lease-up plan with aggressive distribution and same-day inquiry response.`
+    );
+  } else {
+    findings.push(
+      `At your asking rent of $${input.askingRent.toLocaleString()}/mo, every extra 7 days on market costs roughly $${cost7.toLocaleString()} in lost revenue. At 14 days, that's $${cost14.toLocaleString()}. If your rent is high by even $75–$150 relative to market, you may be losing far more in downtime than you gain in rate. Hearth would run a 14-day lease-up plan with price testing, listing distribution, follow-up speed, and showing coordination.`
+    );
+  }
+
+  // --- FINDING 2: Distribution & Follow-Up ---
+  if (input.daysOnMarket > 14 || input.currentlyVacant) {
+    findings.push(
+      `You are likely losing 12–21 days because your unit is only being marketed in one or two places. Hearth distributes listings across Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and local syndication channels. But most owners don't actually have a distribution problem — they have a follow-up and showing problem. Hearth handles inquiry response, lead routing, and showing coordination so leads don't die in the inbox.`
+    );
+  } else {
+    findings.push(
+      `Even at ${input.daysOnMarket} days on market, your listing should be syndicated across all major rental channels — Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, and Craigslist. But distribution alone isn't enough. Most leasing delays come from slow follow-up and showing friction, not lack of exposure. You should aim for sub-5-minute inquiry response during business hours.`
+    );
+  }
+
+  // --- FINDING 3: Response Time & Showing Friction ---
+  if (input.managementSituation === 'Self-managed') {
+    findings.push(
+      `If you are self-managing, slow follow-up is likely costing you more than small pricing adjustments. You should have a same-day inquiry response standard and a structured showing workflow — otherwise, ad spend and syndication volume gets wasted. Most self-managing owners respond in 6–24 hours. Top-performing property managers respond in under 5 minutes. That gap alone can cost you 2–3 weeks of vacancy.`
+    );
+  } else {
+    findings.push(
+      `Even with a PM in place, you should verify their average inquiry response time. Industry data shows that leads contacted within 5 minutes are 21x more likely to convert than leads contacted after 30 minutes. If your PM is averaging 2–4 hour response times, that's likely costing you 1–2 extra weeks of vacancy per turnover. Ask for their response time metrics — if they can't provide them, that's a red flag.`
+    );
+  }
+
+  // --- FINDING 4: Pre-Marketing Checklist ---
+  findings.push(
+    `You should pre-decide pet policy, minimum screening standards, and approval thresholds before marketing. Most owners lose 5–10 days by making these decisions after receiving applications. Have your lease terms, move-in costs, and screening criteria locked in before Day 1 of marketing. Hearth's standard onboarding includes a pre-marketing checklist that eliminates this delay entirely.`
+  );
+
+  // --- FINDING 5: Pricing Friction ---
+  if (input.daysOnMarket > 21) {
+    findings.push(
+      `At ${input.daysOnMarket} days on market, pricing friction is likely a factor. Every extra week at the wrong price costs you $${cost7.toLocaleString()} in lost rent — far more than a $50–$100/mo rate adjustment would cost over a 12-month lease ($600–$1,200 total). Hearth recommends reviewing pricing at Day 10 and making a decision by Day 14: adjust rate, add concessions, or change positioning. Waiting past Day 21 to adjust almost always costs more than the adjustment itself.`
+    );
+  }
+
+  return findings.slice(0, 5);
+}
+
+function generateRecommendation(
+  urgency: UrgencyLabel,
+  property: ZillowData,
+  input: FormInput
+): string {
+  const addr = property.address || 'your property';
+  const dailyCost = Math.round(input.askingRent / 30);
 
   switch (urgency) {
     case 'Critical':
-      return `${propRef} needs immediate leasing intervention. Hearth can typically place a qualified tenant within 2–3 weeks of engagement — every day of delay is costing you real money.`;
+      return `${addr} needs immediate leasing intervention. At $${dailyCost}/day in lost rent, every week of delay costs you $${(dailyCost * 7).toLocaleString()}. Hearth's 14-day lease-up plan includes: Day 1 pricing finalization, Day 2 listing refresh with professional photos, Day 3 broad distribution across 10+ channels, Days 4–7 sub-5-minute inquiry response and showing coordination, Day 7 lead quality review, Day 10 pricing adjustment if needed, and Day 14 escalation. We typically place a qualified tenant within 2–3 weeks of engagement.`;
     case 'High':
-      return `Your property is showing strong indicators of a leasing problem that will get worse without action. Hearth's lease-up team can diagnose and fix the issue fast — we recommend scheduling a strategy call this week.`;
+      return `Your property is showing strong indicators of a leasing problem that will compound. At $${dailyCost}/day, waiting another two weeks to act costs $${(dailyCost * 14).toLocaleString()}. Hearth would immediately audit your pricing, refresh your listing, push broad distribution, and implement same-day showing coordination. We recommend scheduling a strategy call this week — the cost of delay is real and measurable.`;
     case 'Moderate':
-      return `There are clear opportunities to accelerate leasing on your property. A quick strategy session with Hearth's team can identify the fastest path to a signed lease.`;
+      return `There are clear opportunities to accelerate leasing on ${addr}. A structured approach — correct pricing, broad distribution, fast follow-up, and showing coordination — can cut your time-to-tenant by 1–3 weeks. At $${dailyCost}/day, even shaving 10 days off your vacancy saves $${(dailyCost * 10).toLocaleString()}. Hearth's team can identify the fastest path to a signed lease.`;
     case 'Low':
-      return `Your property is in a reasonable position, but there may still be ways to lease faster or at a better rate. Hearth's team can review your approach and suggest optimizations.`;
+      return `${addr} is in a reasonable position, but there may still be ways to lease faster or at a better rate. Even at low urgency, having a pre-marketing checklist, broad distribution, and fast inquiry response can shave days off your vacancy. At $${dailyCost}/day, every day matters. Hearth's team can review your approach and suggest specific optimizations.`;
   }
 }
