@@ -105,11 +105,11 @@ export default function ResultsPage() {
             </div>
             <div className="results-score__cost-wrap animate-fade-in-up animate-delay-1">
               <div className="cost-card glass-card">
-                <span className="cost-card__label">Estimated Monthly Loss</span>
+                <span className="cost-card__label">Estimated Tenant Placement</span>
                 <span className="cost-card__value cost-card__value--monthly">
-                  ${score.estimatedMonthlyLoss.toLocaleString()}
+                  7–14 days
                 </span>
-                <span className="cost-card__sub">per month of vacancy</span>
+                <span className="cost-card__sub">with Hearth&apos;s lease-up team</span>
               </div>
               <div className="cost-card glass-card">
                 <span className="cost-card__label">Projected Annual Impact</span>
