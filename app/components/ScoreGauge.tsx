@@ -65,7 +65,6 @@ export default function ScoreGauge({ score, label }: ScoreGaugeProps) {
           <span className="score-gauge__number" style={{ color }}>
             {animatedScore}
           </span>
-          <span className="score-gauge__max">/10</span>
         </div>
       </div>
       <div className="score-gauge__label" style={{ color }}>

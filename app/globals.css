@@ -703,11 +703,14 @@ p {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: var(--space-xl);
-  align-items: start;
+  align-items: stretch;
 }
 
 .results-score__gauge-wrap {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .results-score__gauge-wrap h3 {

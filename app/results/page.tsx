@@ -155,7 +155,7 @@ export default function ResultsPage() {
             <p>Hearth&apos;s lease-up team can typically place a qualified tenant within 2–3 weeks. Let&apos;s talk.</p>
             <div className="cta-block__buttons">
               <a
-                href="https://hearthproperty.com/contact"
+                href="https://calendly.com/hearthproperty/30min"
                 className="btn btn--primary btn--large"
                 id="cta-book-call"
                 target="_blank"
