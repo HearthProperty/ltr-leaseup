@@ -116,17 +116,6 @@ function generateFindings(
     );
   }
 
-  // --- FINDING 4: Pre-Marketing Prep & Pricing ---
-  if (input.daysOnMarket > 21) {
-    findings.push(
-      `Lock in your pet policy, screening criteria, and lease terms before Day 1 of marketing — most owners lose 5–10 days deciding these after applications come in. At ${input.daysOnMarket} days, you should also review pricing. A $75–$100/mo rate cut costs $900–$1,200/year but could save you $${cost30.toLocaleString()} in vacancy. Hearth handles all of this during onboarding.`
-    );
-  } else {
-    findings.push(
-      `Lock in your pet policy, screening criteria, and lease terms before you start marketing. Most owners lose 5–10 days deciding these after applications come in. Hearth's onboarding eliminates this delay — every decision is made upfront so your listing goes live ready to close.`
-    );
-  }
-
   return findings;
 }
 
