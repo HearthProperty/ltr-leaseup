@@ -95,11 +95,11 @@ function generateFindings(
   // --- FINDING 2: Distribution & Follow-Up ---
   if (input.daysOnMarket > 14 || input.currentlyVacant) {
     findings.push(
-      `You are likely losing 12–21 days because your unit is only being marketed in one or two places. Hearth distributes listings across Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and local syndication channels. But most owners don't actually have a distribution problem — they have a follow-up and showing problem. Hearth handles inquiry response, lead routing, and showing coordination so leads don't die in the inbox.`
+      `You are likely losing 12–21 days because your unit is only being marketed on one or two platforms. To get real visibility, your listing needs to be syndicated across 300+ websites — Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and hundreds of local and national syndication channels. Most owners don't have the tools or time to do that. Hearth syndicates your listing to 300+ sites free of charge as part of our lease-up service, plus handles inquiry response, lead routing, and showing coordination so leads don't die in the inbox.`
     );
   } else {
     findings.push(
-      `Even at ${input.daysOnMarket} days on market, your listing should be syndicated across all major rental channels — Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, and Craigslist. But distribution alone isn't enough. Most leasing delays come from slow follow-up and showing friction, not lack of exposure. You should aim for sub-5-minute inquiry response during business hours.`
+      `Even at ${input.daysOnMarket} days on market, your listing should be syndicated across 300+ websites to maximize exposure — not just Zillow and one or two other platforms. Hearth distributes to 300+ rental sites free of charge, including Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and hundreds of syndication channels. But distribution alone isn't enough — most leasing delays come from slow follow-up and showing friction. You should aim for sub-5-minute inquiry response during business hours.`
     );
   }
 
