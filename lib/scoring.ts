@@ -94,14 +94,14 @@ function generateFindings(
     );
   }
 
-  // --- FINDING 2: Distribution (300+ sites, free) — UNCHANGED ---
+  // --- FINDING 2: Distribution (30+ sites, free) ---
   if (input.daysOnMarket > 14 || input.currentlyVacant) {
     findings.push(
-      `You are likely losing 12–21 days because your unit is only being marketed on one or two platforms. To get real visibility, your listing needs to be syndicated across 300+ websites — Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and hundreds of local and national syndication channels. Most owners don't have the tools or time to do that. Hearth syndicates your listing to 300+ sites free of charge as part of our lease-up service, plus handles inquiry response, lead routing, and showing coordination so leads don't die in the inbox.`
+      `You are likely losing 12–21 days because your unit is only being marketed on one or two platforms. To get real visibility, your listing needs to be syndicated across 30+ rental sites — Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and more. Most owners don't have the tools or time to do that. Hearth syndicates your listing to 30+ sites free of charge as part of our lease-up service, plus handles inquiry response, lead routing, and showing coordination so leads don't die in the inbox.`
     );
   } else {
     findings.push(
-      `Even at ${input.daysOnMarket} days on market, your listing should be syndicated across 300+ websites to maximize exposure — not just Zillow and one or two other platforms. Hearth distributes to 300+ rental sites free of charge, including Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and hundreds of syndication channels. But distribution alone isn't enough — most leasing delays come from slow follow-up and showing friction. You should aim for sub-5-minute inquiry response during business hours.`
+      `Even at ${input.daysOnMarket} days on market, your listing should be syndicated across 30+ rental sites to maximize exposure — not just Zillow and one or two other platforms. Hearth distributes to 30+ sites free of charge, including Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, and Craigslist. But distribution alone isn't enough — most leasing delays come from slow follow-up and showing friction. You should aim for sub-5-minute inquiry response during business hours.`
     );
   }
 
@@ -135,17 +135,19 @@ function generateRecommendation(
   property: ZillowData,
   input: FormInput
 ): string {
-  const addr = property.address || 'your property';
-  const dailyCost = Math.round(input.askingRent / 30);
+  const addr = property.address || 'Your property';
+  const weeklyCost = Math.round(input.askingRent / 30) * 7;
+
+  const plan = `Hearth's 7-day lease-up plan starts with Day 1: pricing strategy, listing optimization, and distribution across 30+ rental sites; Day 3: showing coordination, lead follow-up, and application funnel review; and Day 7: performance analysis, pricing/concession adjustments, and escalation if needed. We typically place qualified tenants within 2 weeks of engagement.`;
 
   switch (urgency) {
     case 'Critical':
-      return `${addr} needs immediate leasing intervention. At $${dailyCost}/day in lost rent, every week of delay costs you $${(dailyCost * 7).toLocaleString()}. Hearth's 14-day lease-up plan includes: Day 1 pricing finalization, Day 2 listing refresh with professional photos, Day 3 broad distribution across 10+ channels, Days 4–7 sub-5-minute inquiry response and showing coordination, Day 7 lead quality review, Day 10 pricing adjustment if needed, and Day 14 escalation. We typically place a qualified tenant within 2–3 weeks of engagement.`;
+      return `${addr} needs immediate lease-up action. Every extra week vacant is costing about $${weeklyCost.toLocaleString()}. ${plan}`;
     case 'High':
-      return `Your property is showing strong indicators of a leasing problem that will compound. At $${dailyCost}/day, waiting another two weeks to act costs $${(dailyCost * 14).toLocaleString()}. Hearth would immediately audit your pricing, refresh your listing, push broad distribution, and implement same-day showing coordination. We recommend scheduling a strategy call this week — the cost of delay is real and measurable.`;
+      return `${addr} needs fast lease-up action. Every extra week on market is costing about $${weeklyCost.toLocaleString()} in lost rent. ${plan}`;
     case 'Moderate':
-      return `There are clear opportunities to accelerate leasing on ${addr}. A structured approach — correct pricing, broad distribution, fast follow-up, and showing coordination — can cut your time-to-tenant by 1–3 weeks. At $${dailyCost}/day, even shaving 10 days off your vacancy saves $${(dailyCost * 10).toLocaleString()}. Hearth's team can identify the fastest path to a signed lease.`;
+      return `There are clear opportunities to accelerate leasing on ${addr}. Every extra week costs about $${weeklyCost.toLocaleString()}. ${plan}`;
     case 'Low':
-      return `${addr} is in a reasonable position, but there may still be ways to lease faster or at a better rate. Even at low urgency, having a pre-marketing checklist, broad distribution, and fast inquiry response can shave days off your vacancy. At $${dailyCost}/day, every day matters. Hearth's team can review your approach and suggest specific optimizations.`;
+      return `${addr} is in a reasonable position, but every week still costs about $${weeklyCost.toLocaleString()} in potential lost rent. ${plan}`;
   }
 }
