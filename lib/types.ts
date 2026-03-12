@@ -12,7 +12,7 @@ export const formInputSchema = z.object({
   askingRent: z.number().min(0, 'Enter your asking rent'),
   daysOnMarket: z.number().min(0, 'Enter days on market'),
   currentlyVacant: z.boolean(),
-  managementSituation: z.enum(['Self-managed', 'Have a PM', 'No PM yet']),
+  managementSituation: z.enum(['Self-managed', 'Have a PM']),
 });
 
 export type FormInput = z.infer<typeof formInputSchema>;

@@ -24,7 +24,6 @@ export const VACANCY_COST_FACTOR = 1.0; // 100% of asking rent lost per month wh
 export const MANAGEMENT_MODIFIER: Record<ManagementSituation, number> = {
   'Self-managed': 1,
   'Have a PM': -1,
-  'No PM yet': 2,
 };
 
 // --- Urgency label thresholds ---

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { FormInput } from '@/lib/types';
 
-const MGMT_OPTIONS = ['Self-managed', 'Have a PM', 'No PM yet'] as const;
+const MGMT_OPTIONS = ['Self-managed', 'Have a PM'] as const;
 
 interface FieldErrors {
   [key: string]: string[] | undefined;
@@ -23,7 +23,7 @@ export default function LeaseUpForm() {
     zillowUrl: '',
     askingRent: '',
     daysOnMarket: '',
-    currentlyVacant: false,
+    currentlyVacant: true,
     managementSituation: 'Self-managed' as FormInput['managementSituation'],
   });
 

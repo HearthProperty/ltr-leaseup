@@ -90,10 +90,6 @@ export function calculateScore(input: FormInput, property: ZillowData): ScoreRes
     findings.push(
       'Self-managing during a vacancy often means slower turnaround — professional leasing support can cut your time-to-tenant significantly.'
     );
-  } else if (input.managementSituation === 'No PM yet') {
-    findings.push(
-      'Without a property manager in place, your vacancy is likely costing you more in both time and missed rent than you realize.'
-    );
   } else {
     findings.push(
       'Having a PM is a good start, but if leasing is stalling, it may be time to evaluate their marketing and pricing strategy.'

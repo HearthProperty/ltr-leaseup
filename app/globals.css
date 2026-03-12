@@ -645,6 +645,14 @@ p {
   padding-bottom: 0;
 }
 
+.results .section {
+  padding: var(--space-xl) 0;
+}
+
+.results-header.section {
+  padding-top: var(--space-2xl);
+}
+
 .results-header__badge {
   display: inline-block;
   font-family: var(--font-heading);
