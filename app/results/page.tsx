@@ -164,7 +164,7 @@ export default function ResultsPage() {
                 Book a Strategy Call
               </a>
               <a
-                href="https://hearthproperty.com/onboarding"
+                href="https://app.hearthproperty.com/onboarding"
                 className="btn btn--secondary btn--large"
                 id="cta-onboarding"
                 target="_blank"
