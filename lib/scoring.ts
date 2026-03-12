@@ -79,20 +79,22 @@ function generateFindings(
 ): string[] {
   const findings: string[] = [];
   const addr = property.address || 'Your property';
-  const { dailyCost, cost7, cost14, cost30 } = costs;
+  const { dailyCost, cost30 } = costs;
+  const lostSoFar = dailyCost * input.daysOnMarket;
+  const lostPlusMonth = lostSoFar + cost30;
 
-  // --- FINDING 1: Vacancy Cost Calculator ---
+  // --- FINDING 1: Lost Rent So Far ---
   if (input.currentlyVacant) {
     findings.push(
-      `${addr} is vacant right now. At your asking rent of $${input.askingRent.toLocaleString()}/mo, every 7 vacant days costs you $${cost7.toLocaleString()} in lost gross rent. At 14 days, that's $${cost14.toLocaleString()}. At 30 days, you've lost $${cost30.toLocaleString()} — and that doesn't include utilities, maintenance, or insurance you're still paying on an empty unit. The fastest way to stop the bleed is a structured lease-up plan with aggressive distribution and same-day inquiry response.`
+      `${addr} has been vacant for ${input.daysOnMarket} days. At $${dailyCost.toLocaleString()}/day, you've already lost approximately $${lostSoFar.toLocaleString()} in rent. If it stays vacant another month, that number hits $${lostPlusMonth.toLocaleString()} — and that doesn't include utilities, maintenance, or insurance you're still paying on an empty unit.`
     );
   } else {
     findings.push(
-      `At your asking rent of $${input.askingRent.toLocaleString()}/mo, every extra 7 days on market costs roughly $${cost7.toLocaleString()} in lost revenue. At 14 days, that's $${cost14.toLocaleString()}. If your rent is high by even $75–$150 relative to market, you may be losing far more in downtime than you gain in rate. Hearth would run a 14-day lease-up plan with price testing, listing distribution, follow-up speed, and showing coordination.`
+      `At $${dailyCost.toLocaleString()}/day, your ${input.daysOnMarket} days on market have already cost roughly $${lostSoFar.toLocaleString()} in lost revenue. Another 30 days brings that to $${lostPlusMonth.toLocaleString()}. If your rent is even $75–$150 above market, you're losing far more in downtime than you'd save in rate.`
     );
   }
 
-  // --- FINDING 2: Distribution & Follow-Up ---
+  // --- FINDING 2: Distribution (300+ sites, free) — UNCHANGED ---
   if (input.daysOnMarket > 14 || input.currentlyVacant) {
     findings.push(
       `You are likely losing 12–21 days because your unit is only being marketed on one or two platforms. To get real visibility, your listing needs to be syndicated across 300+ websites — Zillow, Apartments.com, Rent.com, HotPads, Zumper, Trulia, Realtor.com, Facebook Marketplace, Craigslist, and hundreds of local and national syndication channels. Most owners don't have the tools or time to do that. Hearth syndicates your listing to 300+ sites free of charge as part of our lease-up service, plus handles inquiry response, lead routing, and showing coordination so leads don't die in the inbox.`
@@ -103,30 +105,29 @@ function generateFindings(
     );
   }
 
-  // --- FINDING 3: Response Time & Showing Friction ---
+  // --- FINDING 3: Response Time ---
   if (input.managementSituation === 'Self-managed') {
     findings.push(
-      `If you are self-managing, slow follow-up is likely costing you more than small pricing adjustments. You should have a same-day inquiry response standard and a structured showing workflow — otherwise, ad spend and syndication volume gets wasted. Most self-managing owners respond in 6–24 hours. Top-performing property managers respond in under 5 minutes. That gap alone can cost you 2–3 weeks of vacancy.`
+      `Most self-managing owners respond to inquiries in 6–24 hours. Hearth's leasing team picks up the phone instantly — every time. Leads contacted within minutes are 21x more likely to convert. That speed gap alone can cost you 2–3 extra weeks of vacancy.`
     );
   } else {
     findings.push(
-      `Even with a PM in place, you should verify their average inquiry response time. Industry data shows that leads contacted within 5 minutes are 21x more likely to convert than leads contacted after 30 minutes. If your PM is averaging 2–4 hour response times, that's likely costing you 1–2 extra weeks of vacancy per turnover. Ask for their response time metrics — if they can't provide them, that's a red flag.`
+      `Ask your PM for their average inquiry response time. If they can't tell you, that's a red flag. Leads contacted within minutes are 21x more likely to convert than leads contacted after 30 minutes. Hearth's leasing team picks up the phone instantly — every time.`
     );
   }
 
-  // --- FINDING 4: Pre-Marketing Checklist ---
-  findings.push(
-    `You should pre-decide pet policy, minimum screening standards, and approval thresholds before marketing. Most owners lose 5–10 days by making these decisions after receiving applications. Have your lease terms, move-in costs, and screening criteria locked in before Day 1 of marketing. Hearth's standard onboarding includes a pre-marketing checklist that eliminates this delay entirely.`
-  );
-
-  // --- FINDING 5: Pricing Friction ---
+  // --- FINDING 4: Pre-Marketing Prep & Pricing ---
   if (input.daysOnMarket > 21) {
     findings.push(
-      `At ${input.daysOnMarket} days on market, pricing friction is likely a factor. Every extra week at the wrong price costs you $${cost7.toLocaleString()} in lost rent — far more than a $50–$100/mo rate adjustment would cost over a 12-month lease ($600–$1,200 total). Hearth recommends reviewing pricing at Day 10 and making a decision by Day 14: adjust rate, add concessions, or change positioning. Waiting past Day 21 to adjust almost always costs more than the adjustment itself.`
+      `Lock in your pet policy, screening criteria, and lease terms before Day 1 of marketing — most owners lose 5–10 days deciding these after applications come in. At ${input.daysOnMarket} days, you should also review pricing. A $75–$100/mo rate cut costs $900–$1,200/year but could save you $${cost30.toLocaleString()} in vacancy. Hearth handles all of this during onboarding.`
+    );
+  } else {
+    findings.push(
+      `Lock in your pet policy, screening criteria, and lease terms before you start marketing. Most owners lose 5–10 days deciding these after applications come in. Hearth's onboarding eliminates this delay — every decision is made upfront so your listing goes live ready to close.`
     );
   }
 
-  return findings.slice(0, 5);
+  return findings;
 }
 
 function generateRecommendation(
