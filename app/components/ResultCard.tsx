@@ -1,9 +1,22 @@
+'use client';
+
+import { useState } from 'react';
+
 interface ResultCardProps {
   finding: string;
   index: number;
 }
 
+const PREVIEW_LENGTH = 120;
+
 export default function ResultCard({ finding, index }: ResultCardProps) {
+  const needsTruncation = finding.length > PREVIEW_LENGTH;
+  const [expanded, setExpanded] = useState(false);
+
+  const displayText = !needsTruncation || expanded
+    ? finding
+    : finding.slice(0, PREVIEW_LENGTH).replace(/\s+\S*$/, '') + '…';
+
   return (
     <div
       className={`result-card glass-card animate-fade-in-up animate-delay-${index + 1}`}
@@ -17,7 +30,18 @@ export default function ResultCard({ finding, index }: ResultCardProps) {
           />
         </svg>
       </div>
-      <p className="result-card__text">{finding}</p>
+      <div className="result-card__body">
+        <p className="result-card__text">{displayText}</p>
+        {needsTruncation && (
+          <button
+            className="result-card__toggle"
+            onClick={() => setExpanded(!expanded)}
+            type="button"
+          >
+            {expanded ? 'Show less' : 'Expand'}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
