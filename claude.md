@@ -17,9 +17,9 @@ Turn `leaseup.hearthproperty.com` into a focused inbound funnel for owners askin
 ### Required
 - **Close CRM** — lead creation/update (source of truth for lead records)
 - **Discord** — internal lead notifications (not source of record)
-- **Vercel** — hosting + serverless API routes
-- **Squarespace DNS** — subdomain CNAME for `leaseup.hearthproperty.com`
-- **GitHub** — repo + deploy workflow
+- **Vercel** — hosting + serverless API routes (Done)
+- **Squarespace DNS** — subdomain CNAME for `leaseup.hearthproperty.com` (Done)
+- **GitHub** — repo + deploy workflow (Done)
 
 ### Optional (v1.1+)
 - PDF generation library for downloadable audit output
