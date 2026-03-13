@@ -54,6 +54,14 @@ export default function ResultsPage() {
     ? `${property.city}, ${property.state}`
     : '';
 
+  // Build Calendly URL with prefilled name, email, and address
+  const calendlyBase = 'https://calendly.com/hearthproperty/30min';
+  const calendlyParams = new URLSearchParams();
+  if (input.ownerName) calendlyParams.set('name', input.ownerName);
+  if (input.email) calendlyParams.set('email', input.email);
+  if (property.address) calendlyParams.set('a1', property.address);
+  const calendlyUrl = `${calendlyBase}?${calendlyParams.toString()}`;
+
   return (
     <main className="results">
       {/* ===== NAV ===== */}
@@ -155,7 +163,7 @@ export default function ResultsPage() {
             <p>Hearth&apos;s lease-up team can typically place a qualified tenant within 2–3 weeks. Let&apos;s talk.</p>
             <div className="cta-block__buttons">
               <a
-                href="https://calendly.com/hearthproperty/30min"
+                href={calendlyUrl}
                 className="btn btn--primary btn--large"
                 id="cta-book-call"
                 target="_blank"
