@@ -55,7 +55,7 @@ export default function ResultsPage() {
     : '';
 
   // Build Calendly URL with prefilled name, email, and address
-  const calendlyBase = 'https://calendly.com/hearthproperty/30min';
+  const calendlyBase = 'https://calendly.com/hearthproperty/hearth-strategy-call';
   const calendlyParams = new URLSearchParams();
   if (input.ownerName) calendlyParams.set('name', input.ownerName);
   if (input.email) calendlyParams.set('email', input.email);
