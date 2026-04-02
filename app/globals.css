@@ -638,6 +638,8 @@ p {
   color: var(--color-text-muted);
   line-height: 1.5;
   text-align: center;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .form-consent-text a {
