@@ -271,9 +271,12 @@ export default function LeaseUpForm() {
       </button>
 
       <p className="form-consent-text">
-        By submitting this form, you agree to receive transaction messages from Hearth. Text and data rates may apply. Message frequency varies. Reply STOP to unsubscribe or HELP for help. To view our privacy policy, go to{' '}
+        By submitting this form, you agree to receive transaction messages from Hearth. Text and data rates may apply. Message frequency varies. Reply STOP to unsubscribe or HELP for help. View our{' '}
+        <a href="https://www.hearthproperty.com/terms" target="_blank" rel="noopener noreferrer">
+          Terms
+        </a>{' '}and{' '}
         <a href="https://www.hearthproperty.com/privacy" target="_blank" rel="noopener noreferrer">
-          hearthproperty.com/privacy
+          Privacy Policy
         </a>.
       </p>
     </form>
