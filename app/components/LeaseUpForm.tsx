@@ -269,6 +269,13 @@ export default function LeaseUpForm() {
           'Unlock Your Free Lease-Up Audit →'
         )}
       </button>
+
+      <p className="form-consent-text">
+        By submitting this form, you agree to receive transaction messages from Hearth. Text and data rates may apply. Message frequency varies. Reply STOP to unsubscribe or HELP for help. To view our privacy policy, go to{' '}
+        <a href="https://www.hearthproperty.com/privacy" target="_blank" rel="noopener noreferrer">
+          hearthproperty.com/privacy
+        </a>.
+      </p>
     </form>
   );
 }
